@@ -105,6 +105,9 @@ class BetterCheckboxSettingTab extends PluginSettingTab {
         // Create or reattach the list container.
         if (!this.listContainer) {
             this.listContainer = containerEl.createDiv({ cls: 'checkbox-char-list' });
+            containerEl.style.display = 'flex';
+            containerEl.style.displayDirection = 'column';
+            containerEl.style.gap = '4px';
         } else {
             containerEl.appendChild(this.listContainer);
         }
@@ -113,6 +116,7 @@ class BetterCheckboxSettingTab extends PluginSettingTab {
         // Add button to create a new character card.
         const addButton = containerEl.createEl('button', { text: 'Add New Character' });
         addButton.style.marginTop = '10px';
+        addButton.style.marginRight = '8px';
         addButton.onclick = () => {
             this.plugin.settings.basicCheckboxChars.push('');
             this.plugin.saveSettings();
