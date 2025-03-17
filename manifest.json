@@ -1,0 +1,10 @@
+{
+    "id": "cycle-checkboxes",
+    "name": "Checkbox Cycle",
+    "version": "1.0.0",
+    "minAppVersion": "0.10.1",
+    "description": "A plugin to help cycle through all the available checkboxes.",
+    "author": "Finn Middleton",
+    "authorUrl": "https://www.finnmiddleton.com",
+    "isDesktopOnly": true
+}
