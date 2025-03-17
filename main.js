@@ -1,6 +1,6 @@
-const { Plugin, PluginSettingTab, Setting } = require('obsidian');
+const { Plugin, PluginSettingTab, Setting, Notice } = require('obsidian');
 
-class CycleCheckboxSettings {
+class BetterCheckboxSettings {
     // Define the checkbox characters in data.json (or default here)
     basicCheckboxChars = [' ', '/', 'x', '-', '>', '<'];
 }
@@ -19,12 +19,12 @@ module.exports = class CycleCheckboxPlugin extends Plugin {
         });
 
         // Add the settings tab
-        this.addSettingTab(new CycleCheckboxSettingTab(this.app, this));
+        this.addSettingTab(new BetterCheckboxSettingTab(this.app, this));
     }
 
     // Load settings from data.json; use defaults if not set.
     async loadSettings() {
-        this.settings = Object.assign(new CycleCheckboxSettings(), await this.loadData());
+        this.settings = Object.assign(new BetterCheckboxSettings(), await this.loadData());
     }
 
     // Save settings to data.json
@@ -80,21 +80,28 @@ module.exports = class CycleCheckboxPlugin extends Plugin {
     }
 };
 
-class CycleCheckboxSettingTab extends PluginSettingTab {
+class BetterCheckboxSettingTab extends PluginSettingTab {
     constructor(app, plugin) {
         super(app, plugin);
         this.plugin = plugin;
+        // Store the list container so that it isn’t duplicated
+        this.listContainer = null;
     }
 
     display() {
-        let { containerEl } = this;
+        const { containerEl } = this;
+        containerEl.empty();
 
-        containerEl.createEl('h2', { text: 'Cycle Checkbox Plugin Settings' });
-        containerEl.createEl('p', { text: 'Drag and drop the cards below to reorder the checkbox characters. The top item will be the first in the cycle.' });
+        containerEl.createEl('h2', { text: 'Better Checkbox Plugin Settings' });
+        containerEl.createEl('p', { text: 'Create your own checkbox characters. Drag and drop the cards below to reorder them in the cycle!' });
 
-        // Create a container for the draggable list.
-        const listContainer = containerEl.createDiv({ cls: 'checkbox-char-list' });
-        this.renderList(listContainer);
+        // Create or reattach the list container.
+        if (!this.listContainer) {
+            this.listContainer = containerEl.createDiv({ cls: 'checkbox-char-list' });
+        } else {
+            containerEl.appendChild(this.listContainer);
+        }
+        this.renderList(this.listContainer);
 
         // Add button to create a new character card.
         const addButton = containerEl.createEl('button', { text: 'Add New Character' });
@@ -104,6 +111,18 @@ class CycleCheckboxSettingTab extends PluginSettingTab {
             this.plugin.saveSettings();
             this.renderList(listContainer);
         };
+
+        // Add a Save Settings button that saves settings and closes the tab.
+        const saveButton = containerEl.createEl('button', { text: 'Save Settings', cls: 'mod-cta' });
+        saveButton.style.marginTop = '10px';
+        saveButton.onclick = async () => {
+            await this.plugin.saveSettings();
+            new Notice('Settings saved.');
+            // Attempt to close the settings tab.
+            if (this.app.setting && typeof this.app.setting.close === 'function') {
+                this.app.setting.close();
+            }
+        };
     }
 
     renderList(listContainer) {
@@ -111,27 +130,26 @@ class CycleCheckboxSettingTab extends PluginSettingTab {
         const chars = this.plugin.settings.basicCheckboxChars;
 
         chars.forEach((char, index) => {
-            // Create a container for each draggable card.
+            // Create a draggable card for each character.
             const itemEl = listContainer.createDiv({ cls: 'checkbox-char-item' });
             itemEl.setAttr('draggable', 'true');
             itemEl.setAttr('data-index', index);
 
-            // Create a drag handle.
-            const dragHandle = itemEl.createEl('span', { text: '⠿', cls: 'drag-handle' });
+            // Drag handle.
+            const dragHandle = itemEl.createEl('span', { text: '⇅', cls: 'drag-handle' });
             dragHandle.style.cursor = 'move';
             dragHandle.style.marginRight = '8px';
 
-            // Create an input for the character.
+            // Input for the character.
             const inputEl = itemEl.createEl('input', { type: 'text', value: char });
             inputEl.style.width = '40px';
             inputEl.style.marginRight = '8px';
-
             inputEl.onchange = (evt) => {
                 this.plugin.settings.basicCheckboxChars[index] = evt.target.value;
                 this.plugin.saveSettings();
             };
 
-            // Create a remove button.
+            // Remove button.
             const removeButton = itemEl.createEl('button', { text: 'Remove', cls: 'remove-btn' });
             removeButton.style.marginLeft = 'auto';
             removeButton.onclick = () => {
