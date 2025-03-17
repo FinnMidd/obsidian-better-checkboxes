@@ -1,7 +1,8 @@
 const { Plugin, PluginSettingTab, Setting } = require('obsidian');
 
 class CycleCheckboxSettings {
-    useAllCheckboxChars = false;
+    // Define the checkbox characters in data.json (or default here)
+    basicCheckboxChars = [' ', '/', 'x', '-', '>', '<'];
 }
 
 module.exports = class CycleCheckboxPlugin extends Plugin {
@@ -21,26 +22,23 @@ module.exports = class CycleCheckboxPlugin extends Plugin {
         this.addSettingTab(new CycleCheckboxSettingTab(this.app, this));
     }
 
+    // Load settings from data.json; use defaults if not set.
     async loadSettings() {
         this.settings = Object.assign(new CycleCheckboxSettings(), await this.loadData());
     }
 
+    // Save settings to data.json
     async saveSettings() {
         await this.saveData(this.settings);
     }
 
+    // Main function to cycle the checkbox state
     cycleCheckbox(editor) {
         const cursor = editor.getCursor();
         const line = editor.getLine(cursor.line);
 
-        // Define the checkbox characters based on the settings
-        const basicCheckboxChars = [' ', '/', 'x', '-', '>', '<'];
-        const extraCheckboxChars = ['?', '!', '*', '"', 'l', 'b', 'i', 'S', 'I', 'p', 'c', 'f', 'k', 'w', 'u', 'd', 'D', 'P', 'M'];
-
-        // Concatenate based on settings
-        const checkboxChars = this.settings.useAllCheckboxChars
-            ? basicCheckboxChars.concat(extraCheckboxChars)
-            : basicCheckboxChars;
+        // Retrieve the checkbox characters from settings (stored in data.json)
+        const checkboxChars = this.settings.basicCheckboxChars;
 
         // Define regex to match any checkbox at the start of the line
         const checkboxRegex = /^- \[(.)\] ?(.*)/;
@@ -49,9 +47,11 @@ module.exports = class CycleCheckboxPlugin extends Plugin {
         const match = line.match(checkboxRegex);
         let updatedLine;
 
+        // If there is a match, update the checkbox state
+        // Else, add a new checkbox at the start of the line
         if (match) {
-            const currentChar = match[1]; // Character inside the brackets
-            const restOfLine = match[2]; // Rest of the line after the checkbox
+            const currentChar = match[1];   // Character inside the brackets
+            const restOfLine = match[2];    // Rest of the line after the checkbox
 
             if (checkboxChars.includes(currentChar)) {
                 // Get next character
@@ -90,17 +90,10 @@ class CycleCheckboxSettingTab extends PluginSettingTab {
         let { containerEl } = this;
 
         containerEl.empty();
-
         containerEl.createEl('h2', { text: 'Cycle Checkbox Plugin Settings' });
 
-        new Setting(containerEl)
-            .setName('Use All Checkbox Characters')
-            .setDesc('When enabled, cycles through all checkbox characters.')
-            .addToggle(toggle => toggle
-                .setValue(this.plugin.settings.useAllCheckboxChars)
-                .onChange(async (value) => {
-                    this.plugin.settings.useAllCheckboxChars = value;
-                    await this.plugin.saveSettings();
-                }));
+        containerEl.createEl('p', {
+            text: 'The checkbox characters are defined in data.json.'
+        });
     }
 }
