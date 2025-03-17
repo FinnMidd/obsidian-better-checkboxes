@@ -116,6 +116,8 @@ class BetterCheckboxSettingTab extends PluginSettingTab {
         const saveButton = containerEl.createEl('button', { text: 'Save Settings', cls: 'mod-cta' });
         saveButton.style.marginTop = '10px';
         saveButton.onclick = async () => {
+            // Remove any blank or space-only character cards before saving.
+            this.plugin.settings.basicCheckboxChars = this.plugin.settings.basicCheckboxChars.filter(ch => ch.trim() !== '');
             await this.plugin.saveSettings();
             new Notice('Settings saved.');
             // Attempt to close the settings tab.
