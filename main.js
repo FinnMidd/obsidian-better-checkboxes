@@ -144,6 +144,7 @@ class BetterCheckboxSettingTab extends PluginSettingTab {
             const inputEl = itemEl.createEl('input', { type: 'text', value: char });
             inputEl.style.width = '40px';
             inputEl.style.marginRight = '8px';
+            inputEl.maxLength = 1;                      // Restrict input to 1 character.
             inputEl.onchange = (evt) => {
                 const newValue = evt.target.value;
                 // Do not allow blank input.
