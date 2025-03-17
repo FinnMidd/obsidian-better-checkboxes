@@ -117,7 +117,7 @@ class CycleCheckboxSettingTab extends PluginSettingTab {
             itemEl.setAttr('data-index', index);
 
             // Create a drag handle.
-            const dragHandle = itemEl.createEl('span', { text: '⇅', cls: 'drag-handle' });
+            const dragHandle = itemEl.createEl('span', { text: '⠿', cls: 'drag-handle' });
             dragHandle.style.cursor = 'move';
             dragHandle.style.marginRight = '8px';
 
