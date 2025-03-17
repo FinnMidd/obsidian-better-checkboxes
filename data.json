@@ -1,3 +1,10 @@
 {
+  "basicCheckboxChars": [
+    "/",
+    "x",
+    "-",
+    ">",
+    "<"
+  ],
   "useAllCheckboxChars": true
 }
