@@ -109,7 +109,7 @@ class BetterCheckboxSettingTab extends PluginSettingTab {
         addButton.onclick = () => {
             this.plugin.settings.basicCheckboxChars.push(' ');
             this.plugin.saveSettings();
-            this.renderList(listContainer);
+            this.renderList(this.listContainer);
         };
 
         // Add a Save Settings button that saves settings and closes the tab.
