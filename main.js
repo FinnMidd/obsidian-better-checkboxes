@@ -102,9 +102,9 @@ class BetterCheckboxSettingTab extends PluginSettingTab {
         // Create or reattach the list container.
         if (!this.listContainer) {
             this.listContainer = containerEl.createDiv({ cls: 'checkbox-char-list' });
-            containerEl.style.display = 'flex';
-            containerEl.style.displayDirection = 'column';
-            containerEl.style.gap = '4px';
+            this.listContainer.style.display = 'flex';
+            this.listContainer.style.flexDirection = 'column';
+            this.listContainer.style.gap = '4px';
         } else {
             containerEl.appendChild(this.listContainer);
         }
