@@ -89,11 +89,85 @@ class CycleCheckboxSettingTab extends PluginSettingTab {
     display() {
         let { containerEl } = this;
 
-        containerEl.empty();
         containerEl.createEl('h2', { text: 'Cycle Checkbox Plugin Settings' });
+        containerEl.createEl('p', { text: 'Drag and drop the cards below to reorder the checkbox characters. The top item will be the first in the cycle.' });
 
-        containerEl.createEl('p', {
-            text: 'The checkbox characters are defined in data.json.'
+        // Create a container for the draggable list.
+        const listContainer = containerEl.createDiv({ cls: 'checkbox-char-list' });
+        this.renderList(listContainer);
+
+        // Add button to create a new character card.
+        const addButton = containerEl.createEl('button', { text: 'Add New Character' });
+        addButton.style.marginTop = '10px';
+        addButton.onclick = () => {
+            this.plugin.settings.basicCheckboxChars.push(' ');
+            this.plugin.saveSettings();
+            this.renderList(listContainer);
+        };
+    }
+
+    renderList(listContainer) {
+        listContainer.empty();
+        const chars = this.plugin.settings.basicCheckboxChars;
+
+        chars.forEach((char, index) => {
+            // Create a container for each draggable card.
+            const itemEl = listContainer.createDiv({ cls: 'checkbox-char-item' });
+            itemEl.setAttr('draggable', 'true');
+            itemEl.setAttr('data-index', index);
+
+            // Create a drag handle.
+            const dragHandle = itemEl.createEl('span', { text: '⇅', cls: 'drag-handle' });
+            dragHandle.style.cursor = 'move';
+            dragHandle.style.marginRight = '8px';
+
+            // Create an input for the character.
+            const inputEl = itemEl.createEl('input', { type: 'text', value: char });
+            inputEl.style.width = '40px';
+            inputEl.style.marginRight = '8px';
+
+            inputEl.onchange = (evt) => {
+                this.plugin.settings.basicCheckboxChars[index] = evt.target.value;
+                this.plugin.saveSettings();
+            };
+
+            // Create a remove button.
+            const removeButton = itemEl.createEl('button', { text: 'Remove', cls: 'remove-btn' });
+            removeButton.style.marginLeft = 'auto';
+            removeButton.onclick = () => {
+                this.plugin.settings.basicCheckboxChars.splice(index, 1);
+                this.plugin.saveSettings();
+                this.renderList(listContainer);
+            };
+
+            // Drag events.
+            itemEl.addEventListener('dragstart', (e) => {
+                e.dataTransfer.effectAllowed = 'move';
+                e.dataTransfer.setData('text/plain', index.toString());
+                itemEl.classList.add('dragging');
+            });
+
+            itemEl.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                e.dataTransfer.dropEffect = 'move';
+            });
+
+            itemEl.addEventListener('drop', (e) => {
+                e.preventDefault();
+                const draggedIndex = parseInt(e.dataTransfer.getData('text/plain'));
+                const targetIndex = parseInt(itemEl.getAttribute('data-index'));
+                if (draggedIndex === targetIndex) return;
+
+                // Reorder the array.
+                const movedItem = this.plugin.settings.basicCheckboxChars.splice(draggedIndex, 1)[0];
+                this.plugin.settings.basicCheckboxChars.splice(targetIndex, 0, movedItem);
+                this.plugin.saveSettings();
+                this.renderList(listContainer);
+            });
+
+            itemEl.addEventListener('dragend', () => {
+                itemEl.classList.remove('dragging');
+            });
         });
     }
 }
