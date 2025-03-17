@@ -136,7 +136,7 @@ class BetterCheckboxSettingTab extends PluginSettingTab {
             itemEl.setAttr('data-index', index);
 
             // Drag handle.
-            const dragHandle = itemEl.createEl('span', { text: '⇅', cls: 'drag-handle' });
+            const dragHandle = itemEl.createEl('span', { text: '⠿', cls: 'drag-handle' });
             dragHandle.style.cursor = 'move';
             dragHandle.style.marginRight = '8px';
 
