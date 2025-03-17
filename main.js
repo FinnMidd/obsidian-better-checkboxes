@@ -107,7 +107,7 @@ class BetterCheckboxSettingTab extends PluginSettingTab {
         const addButton = containerEl.createEl('button', { text: 'Add New Character' });
         addButton.style.marginTop = '10px';
         addButton.onclick = () => {
-            this.plugin.settings.basicCheckboxChars.push(' ');
+            this.plugin.settings.basicCheckboxChars.push('');
             this.plugin.saveSettings();
             this.renderList(this.listContainer);
         };
