@@ -68,7 +68,7 @@ module.exports = class CycleCheckboxPlugin extends Plugin {
             }
         } else {
             // No checkbox, add '- [ ]' at the start
-            updatedLine = `- [ ] ${line}`.trim();
+            updatedLine = `- [ ] ${line}`;
         }
 
         // Apply the update to the editor
