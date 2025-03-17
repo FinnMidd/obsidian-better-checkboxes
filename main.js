@@ -2,7 +2,7 @@ const { Plugin, PluginSettingTab, Setting, Notice } = require('obsidian');
 
 class BetterCheckboxSettings {
     // Define the checkbox characters in data.json (or default here)
-    basicCheckboxChars = [' ', '/', 'x', '-', '>', '<'];
+    basicCheckboxChars = ['/', 'x', '-', '>', '<'];
 }
 
 module.exports = class CycleCheckboxPlugin extends Plugin {
@@ -37,8 +37,8 @@ module.exports = class CycleCheckboxPlugin extends Plugin {
         const cursor = editor.getCursor();
         const line = editor.getLine(cursor.line);
 
-        // Retrieve the checkbox characters from settings (stored in data.json)
-        const checkboxChars = this.settings.basicCheckboxChars;
+        // Build full cycle options, with blank as the first state.
+        const cycleOptions = [' '].concat(this.settings.basicCheckboxChars);
 
         // Define regex to match any checkbox at the start of the line
         const checkboxRegex = /^- \[(.)\] ?(.*)/;
@@ -53,11 +53,11 @@ module.exports = class CycleCheckboxPlugin extends Plugin {
             const currentChar = match[1];   // Character inside the brackets
             const restOfLine = match[2];    // Rest of the line after the checkbox
 
-            if (checkboxChars.includes(currentChar)) {
+            if (cycleOptions.includes(currentChar)) {
                 // Get next character
-                let currentIndex = checkboxChars.indexOf(currentChar);
-                let nextIndex = (currentIndex + 1) % checkboxChars.length;
-                let nextChar = checkboxChars[nextIndex];
+                let currentIndex = cycleOptions.indexOf(currentChar);
+                let nextIndex = (currentIndex + 1) % cycleOptions.length;
+                let nextChar = cycleOptions[nextIndex];
                 let nextState = `- [${nextChar}]`;
 
                 // Build updated line
@@ -145,7 +145,14 @@ class BetterCheckboxSettingTab extends PluginSettingTab {
             inputEl.style.width = '40px';
             inputEl.style.marginRight = '8px';
             inputEl.onchange = (evt) => {
-                this.plugin.settings.basicCheckboxChars[index] = evt.target.value;
+                const newValue = evt.target.value;
+                // Do not allow blank input.
+                if(newValue === ''){
+                    evt.target.value = char;
+                    new Notice('Blank values are not allowed.');
+                    return;
+                }
+                this.plugin.settings.basicCheckboxChars[index] = newValue;
                 this.plugin.saveSettings();
             };
 
