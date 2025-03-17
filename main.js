@@ -61,10 +61,10 @@ module.exports = class CycleCheckboxPlugin extends Plugin {
                 let nextState = `- [${nextChar}]`;
 
                 // Build updated line
-                updatedLine = `${nextState} ${restOfLine}`.trim();
+                updatedLine = `${nextState} ${restOfLine}`;
             } else {
                 // Unknown character, replace with '- [ ]'
-                updatedLine = `- [ ] ${restOfLine}`.trim();
+                updatedLine = `- [ ] ${restOfLine}`;
             }
         } else {
             // No checkbox, add '- [ ]' at the start
