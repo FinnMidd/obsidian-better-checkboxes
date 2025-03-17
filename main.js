@@ -9,9 +9,6 @@ module.exports = class CycleCheckboxPlugin extends Plugin {
     async onload() {
         await this.loadSettings();
 
-        // Remove the native Obsidian command, so ours takes precedence.
-        this.app.commands.removeCommand("editor:toggle-checkbox-status");
-
         // Register the command
         this.addCommand({
         id: 'cycle-checkbox',
